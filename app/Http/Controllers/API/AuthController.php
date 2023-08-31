@@ -45,7 +45,8 @@ class AuthController extends Controller
      */
     public function signup(RegistrationRequest $request): JsonResponse
     {
-        User::create($request->all(['email', 'name', 'password']));
+        $user = User::create($request->all(['email', 'name', 'password']));
+        $user->balance()->create();
 
         return response()->json([
             'message' => 'success'

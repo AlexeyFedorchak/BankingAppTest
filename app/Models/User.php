@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -31,6 +33,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'created_at',
+        'updated_at',
     ];
 
     /**
@@ -42,4 +46,24 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Get the balance this user owns
+     *
+     * @return hasOne
+     */
+    public function balance(): hasOne
+    {
+        return $this->hasOne(Balance::class);
+    }
+
+    /**
+     * Get the deposits this user owns
+     *
+     * @return hasMany
+     */
+    public function deposits(): hasMany
+    {
+        return $this->hasMany(Deposit::class);
+    }
 }

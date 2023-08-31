@@ -2,7 +2,10 @@
 
 namespace Tests\Feature\Auth;
 
-use App\Models\User;
+use App\Models\{
+    Balance,
+    User
+};
 use Illuminate\Support\Str;
 use Tests\Feature\BaseTestCase;
 
@@ -70,6 +73,11 @@ class AuthSignupApiTest extends BaseTestCase
         $this->assertDatabaseHas(User::class, [
             'email' => $user->email,
             'name' => $user->name,
+        ]);
+
+        $user->refresh();
+        $this->assertDatabaseHas(Balance::class, [
+            'user_id' => User::where('email', $user->email)->first()->id,
         ]);
     }
 }

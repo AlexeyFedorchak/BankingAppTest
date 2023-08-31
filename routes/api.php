@@ -1,7 +1,10 @@
 <?php
 
-use App\Http\Controllers\API\AuthController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\API\{
+    MoneyController,
+    UserController,
+    AuthController
+};
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,6 +28,12 @@ Route::prefix('/auth')->group(function () {
         ->post('/signup', [AuthController::class, 'signup'])->name('api.auth.signup');
 });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('/money')->group(function () {
+        Route::post('/deposit', [MoneyController::class, 'deposit'])->name('api.money.deposit');
+        Route::post('/withdraw', [MoneyController::class, 'withdraw'])->name('api.money.withdraw');
+        Route::post('/transfer', [MoneyController::class, 'transfer'])->name('api.money.transfer');
+    });
+
+    Route::get('/users/me', [UserController::class, 'me'])->name('api.users.me');
 });
