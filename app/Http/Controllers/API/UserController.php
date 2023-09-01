@@ -13,6 +13,6 @@ class UserController extends Controller
      */
     public function me(): UserResource
     {
-        return UserResource::make(auth()->user()->with('balance')->get());
+        return UserResource::make(auth()->user()->load('balance'));
     }
 }

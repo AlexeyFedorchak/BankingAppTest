@@ -4,14 +4,14 @@ namespace Tests\Feature\Money;
 
 use App\Models\{
     Balance,
-    Deposit,
+    withdraw,
     Statement,
     User
 };
 use Illuminate\Support\Str;
 use Tests\Feature\BaseTestCase;
 
-class MoneyDepositApiTest extends BaseTestCase
+class MoneyWithdrawApiTest extends BaseTestCase
 {
     /**
      * Assert that the amount is required.
@@ -22,7 +22,7 @@ class MoneyDepositApiTest extends BaseTestCase
     public function assert_amount_field_is_required()
     {
         $this->actingAs(User::factory()->create())
-            ->postJson(route('api.money.deposit'))
+            ->postJson(route('api.money.withdraw'))
             ->assertStatus(422)
             ->assertJsonValidationErrorFor('amount')
             ->assertJson([
@@ -44,7 +44,7 @@ class MoneyDepositApiTest extends BaseTestCase
     public function assert_amount_field_must_be_numeric()
     {
         $this->actingAs(User::factory()->create())
-            ->postJson(route('api.money.deposit'), ['amount' => Str::random()])
+            ->postJson(route('api.money.withdraw'), ['amount' => Str::random()])
             ->assertStatus(422)
             ->assertJsonValidationErrorFor('amount')
             ->assertJson([
@@ -66,7 +66,7 @@ class MoneyDepositApiTest extends BaseTestCase
     public function assert_amount_field_must_be_at_least_1()
     {
         $this->actingAs(User::factory()->create())
-            ->postJson(route('api.money.deposit'), ['amount' => rand(-100, 0)])
+            ->postJson(route('api.money.withdraw'), ['amount' => rand(-100, 0)])
             ->assertStatus(422)
             ->assertJsonValidationErrorFor('amount')
             ->assertJson([
@@ -88,7 +88,7 @@ class MoneyDepositApiTest extends BaseTestCase
     public function assert_amount_field_have_max_value()
     {
         $this->actingAs(User::factory()->create())
-            ->postJson(route('api.money.deposit'), ['amount' => rand(1000001, 1000010)])
+            ->postJson(route('api.money.withdraw'), ['amount' => rand(1000001, 1000010)])
             ->assertStatus(422)
             ->assertJsonValidationErrorFor('amount')
             ->assertJson([
@@ -102,39 +102,39 @@ class MoneyDepositApiTest extends BaseTestCase
     }
 
     /**
-     * Assert that the deposit and statement were stored
+     * Assert that the withdraw and statement were stored
      *
      * @test
      * @return void
      */
-    public function assert_deposit_and_statement_were_stored()
+    public function assert_withdraw_and_statement_were_stored()
     {
         $user = User::factory()->create();
-        $balance = Balance::factory()->create(['user_id' => $user->id]);
+        $balance = Balance::factory()->create(['user_id' => $user->id, 'amount' => 100]);
         $amount = rand(1, 100);
 
         $this->actingAs($user)
-            ->postJson(route('api.money.deposit'), ['amount' => $amount])
+            ->postJson(route('api.money.withdraw'), ['amount' => $amount])
             ->assertStatus(200)
             ->assertJson(['message' => 'success']);
 
-        $this->assertDatabaseHas(Deposit::class, [
+        $this->assertDatabaseHas(Withdraw::class, [
             'user_id' => $user->id,
             'amount' => $amount,
         ]);
 
-        $deposit = $user->deposits()->where('amount', $balance->amount + $amount)->first();
+        $withdraw = $user->withdraws()->where('amount', $amount)->first();
 
         $this->assertDatabaseHas(Statement::class, [
             'user_id' => $user->id,
-            'type' => Statement::TYPE_CREDIT,
-            'details' => Statement::TYPE_CREDIT,
-            'owner_id' => $deposit->id,
-            'owner_type' => $deposit::class,
-            'balance' => $deposit->amount,
+            'type' => Statement::TYPE_DEBIT,
+            'details' => Statement::TYPE_DEBIT,
+            'owner_id' => $withdraw->id,
+            'owner_type' => $withdraw::class,
+            'balance' => $balance->amount - $amount,
         ]);
 
-        $expectedAmount = $balance->amount + $amount;
+        $expectedAmount = $balance->amount - $amount;
         $balance->refresh();
         $this->assertEquals($expectedAmount, $balance->amount);
     }

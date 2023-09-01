@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -65,5 +65,46 @@ class User extends Authenticatable
     public function deposits(): hasMany
     {
         return $this->hasMany(Deposit::class);
+    }
+
+    /**
+     * Get the withdraws this user owns
+     *
+     * @return hasMany
+     */
+    public function withdraws(): hasMany
+    {
+        return $this->hasMany(Withdraw::class);
+    }
+
+    /**
+     * Get the moneyTransfers this user owns
+     *
+     * @return hasMany
+     */
+    public function moneyTransfers(): hasMany
+    {
+        return $this->hasMany(MoneyTransfer::class, 'sender_user_id');
+    }
+
+    /**
+     * Scope a query to filter by a given email
+     * @param Builder $builder
+     * @param string $email
+     * @return Builder
+     */
+    public function scopeByEmail(Builder $builder, string $email): Builder
+    {
+        return $builder->where('email', $email);
+    }
+
+    /**
+     * Get the deposits this user owns
+     *
+     * @return hasMany
+     */
+    public function statements(): hasMany
+    {
+        return $this->hasMany(Statement::class);
     }
 }

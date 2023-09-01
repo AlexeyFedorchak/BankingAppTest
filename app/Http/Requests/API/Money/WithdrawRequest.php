@@ -4,7 +4,7 @@ namespace App\Http\Requests\API\Money;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DepositRequest extends FormRequest
+class WithdrawRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

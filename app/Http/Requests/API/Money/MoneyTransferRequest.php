@@ -4,7 +4,7 @@ namespace App\Http\Requests\API\Money;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DepositRequest extends FormRequest
+class MoneyTransferRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,7 +27,12 @@ class DepositRequest extends FormRequest
                 'numeric',
                 'min:1',
                 'max:1000000'
-            ]
+            ],
+            'email' => [
+                'required',
+                'email',
+                'exists:users,email'
+            ],
         ];
     }
 }

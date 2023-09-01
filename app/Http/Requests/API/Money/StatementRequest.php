@@ -4,7 +4,7 @@ namespace App\Http\Requests\API\Money;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DepositRequest extends FormRequest
+class StatementRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,12 +22,14 @@ class DepositRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'amount' => [
-                'required',
-                'numeric',
-                'min:1',
-                'max:1000000'
-            ]
+            'page' => [
+                'integer',
+                'min:1'
+            ],
+            'per_page' => [
+                'integer',
+                'min:1'
+            ],
         ];
     }
 }

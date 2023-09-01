@@ -32,7 +32,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/money')->group(function () {
         Route::post('/deposit', [MoneyController::class, 'deposit'])->name('api.money.deposit');
         Route::post('/withdraw', [MoneyController::class, 'withdraw'])->name('api.money.withdraw');
-        Route::post('/transfer', [MoneyController::class, 'transfer'])->name('api.money.transfer');
+        Route::post('/transfer', [MoneyController::class, 'moneyTransfer'])->name('api.money.transfer');
+        Route::get('/statements', [MoneyController::class, 'statements'])->name('api.money.statements');
     });
 
     Route::get('/users/me', [UserController::class, 'me'])->name('api.users.me');
