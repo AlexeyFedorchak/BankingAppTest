@@ -25,10 +25,20 @@ class Statement extends Model
     ];
 
     /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'owner_type',
+        'owner_id',
+    ];
+
+    /**
      * Possible types
      */
     const TYPE_CREDIT = 'Credit';
-    const TYPE_DEBIT = 'DEBIT';
+    const TYPE_DEBIT = 'Debit';
 
     /**
      * Get the user who owns this statement
@@ -38,5 +48,15 @@ class Statement extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Return the owner of this bank account
+     *
+     * @return MorphTo
+     */
+    public function owner(): MorphTo
+    {
+        return $this->morphTo();
     }
 }
