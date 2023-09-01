@@ -19,18 +19,10 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class MoneyController extends Controller
 {
     /**
-     * @var MoneyService
-     */
-    public MoneyService $moneyService;
-
-    /**
      * Create a MoneyController instance
      * @param MoneyService $moneyService
      */
-    public function __construct(MoneyService $moneyService)
-    {
-        $this->moneyService = $moneyService;
-    }
+    public function __construct(protected readonly MoneyService $moneyService) {}
 
     /**
      * @param DepositRequest $request
@@ -48,14 +40,11 @@ class MoneyController extends Controller
     /**
      * @param WithdrawRequest $request
      * @return JsonResponse
+     * @throws DoesntHaveEnoughMoneyException
      */
     public function withdraw(WithdrawRequest $request): JsonResponse
     {
-        try {
-            $this->moneyService->withdraw(auth()->user(), $request->amount);
-        } catch (DoesntHaveEnoughMoneyException) {
-            return $this->notEnoughMoneyResponse();
-        }
+        $this->moneyService->withdraw(auth()->user(), $request->amount);
 
         return response()->json([
             'message' => 'success'
@@ -64,31 +53,22 @@ class MoneyController extends Controller
 
     /**
      * Transfer money to the user with a given email
+     *
      * @param MoneyTransferRequest $request
      * @return JsonResponse
+     * @throws DoesntHaveEnoughMoneyException
      */
     public function moneyTransfer(MoneyTransferRequest $request): JsonResponse
     {
-        try {
-            $this->moneyService->moneyTransfer(auth()->user(), User::byEmail($request->email)->first(), $request->amount);
-        } catch (DoesntHaveEnoughMoneyException) {
-            return $this->notEnoughMoneyResponse();
-        }
+        $this->moneyService->moneyTransfer(
+            auth()->user(),
+            User::byEmail($request->email)->first(),
+            $request->amount
+        );
 
         return response()->json([
             'message' => 'success'
         ]);
-    }
-
-    /**
-     * @param string|null $message
-     * @return JsonResponse
-     */
-    private function notEnoughMoneyResponse(?string $message = null): JsonResponse
-    {
-        return response()->json([
-            'message' => $message ?? 'Your doesn\'t have enough money'
-        ], 422);
     }
 
     /**

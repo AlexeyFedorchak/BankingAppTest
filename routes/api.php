@@ -19,22 +19,23 @@ use Illuminate\Support\Facades\Route;
 */
 
 /** Auth **/
-Route::prefix('/auth')->group(function () {
-    Route::post('/login', [AuthController::class, 'login'])->name('api.auth.login');
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/logout', [AuthController::class, 'logout'])->name('api.auth.logout');
-    });
+Route::prefix('/auth')->name('api.auth.')->group(function () {
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+
+    Route::middleware('auth:sanctum')
+        ->get('/logout', [AuthController::class, 'logout'])->name('logout');
+
     Route::middleware('throttle:3,1')
-        ->post('/signup', [AuthController::class, 'signup'])->name('api.auth.signup');
+        ->post('/signup', [AuthController::class, 'signup'])->name('signup');
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::prefix('/money')->group(function () {
-        Route::post('/deposit', [MoneyController::class, 'deposit'])->name('api.money.deposit');
-        Route::post('/withdraw', [MoneyController::class, 'withdraw'])->name('api.money.withdraw');
-        Route::post('/transfer', [MoneyController::class, 'moneyTransfer'])->name('api.money.transfer');
-        Route::get('/statements', [MoneyController::class, 'statements'])->name('api.money.statements');
+Route::middleware('auth:sanctum')->name('api.')->group(function () {
+    Route::prefix('/money')->name('money.')->group(function () {
+        Route::post('/deposit', [MoneyController::class, 'deposit'])->name('deposit');
+        Route::post('/withdraw', [MoneyController::class, 'withdraw'])->name('withdraw');
+        Route::post('/transfer', [MoneyController::class, 'moneyTransfer'])->name('transfer');
+        Route::get('/statements', [MoneyController::class, 'statements'])->name('statements');
     });
 
-    Route::get('/users/me', [UserController::class, 'me'])->name('api.users.me');
+    Route::get('/users/me', [UserController::class, 'me'])->name('users.me');
 });
