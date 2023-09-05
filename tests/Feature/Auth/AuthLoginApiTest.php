@@ -43,7 +43,7 @@ class AuthLoginApiTest extends BaseTestCase
             'email' => $user->email,
             'password' => 'not_valid_password'
         ])
-            ->assertStatus(401);
+            ->assertStatus(422);
     }
 
     /**

@@ -27,7 +27,7 @@ class AuthController extends Controller
         if (!$user || !auth()->attempt($request->only('email', 'password'))) {
             return response()->json([
                 'message' => 'Invalid login details'
-            ], 401);
+            ], 422);
         }
 
         return response()->json([
