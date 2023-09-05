@@ -111,11 +111,12 @@ class MoneyService
      */
     public function balanceDecreaseAmount(Balance $balance, float $amount): Balance
     {
-        if ($balance->amount <= 0) {
+        $decreasedAmount = $balance->amount - $amount;
+        if ($decreasedAmount < 0) {
             throw new DoesntHaveEnoughMoneyException();
         }
 
-        $balance->amount -= $amount;
+        $balance->amount = $decreasedAmount;
         $balance->save();
 
         return $balance;
